@@ -1,9 +1,11 @@
+import contextlib
 import io
 import json
 import tempfile
 import unittest
 from pathlib import Path
 
+import schemadrift
 from schemadrift.cli import EXIT_DRIFT, EXIT_ERROR, EXIT_OK, main
 
 
@@ -83,6 +85,14 @@ class CliTests(unittest.TestCase):
         self.assertEqual(code, EXIT_DRIFT)
         self.assertEqual(payload["role"], "consumer")
         self.assertEqual(payload["changes"][0]["kind"], "field_removed")
+
+    def test_version_names_the_program(self):
+        buf = io.StringIO()
+        with self.assertRaises(SystemExit) as ctx:
+            with contextlib.redirect_stdout(buf):
+                main(["--version"])
+        self.assertEqual(ctx.exception.code, 0)
+        self.assertEqual(buf.getvalue().strip(), f"schemadrift {schemadrift.__version__}")
 
     def test_missing_file_is_an_error_not_a_crash(self):
         good = self.write("v1", [{"a": 1}])
