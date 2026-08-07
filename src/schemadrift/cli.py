@@ -35,7 +35,9 @@ def build_parser() -> argparse.ArgumentParser:
         description="Infer JSON schemas from real payloads and tell you who a "
         "change breaks.",
     )
-    parser.add_argument("--version", action="version", version=__version__)
+    parser.add_argument(
+        "--version", action="version", version=f"%(prog)s {__version__}"
+    )
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_infer = sub.add_parser("infer", help="print the schema inferred from samples")
