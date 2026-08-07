@@ -21,3 +21,9 @@ jobs:
         run: pip install -e .
       - name: Unit tests
         run: python -m unittest discover -s tests -v
+      - name: End-to-end (consumer diff must flag breaking changes)
+        run: |
+          schemadrift diff examples/orders-v1.ndjson examples/orders-v2.ndjson \
+            && { echo "expected exit 1"; exit 1; } || true
+      - name: End-to-end (schema inference is valid JSON)
+        run: schemadrift infer examples/orders-v2.ndjson | python -c "import json,sys; json.load(sys.stdin)"
